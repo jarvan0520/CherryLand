@@ -3,7 +3,9 @@ import axios  from "axios";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import IconButton from "@material-ui/core/IconButton";
-// import './App.css';
+const ls = localStorage.getItem("token")
+const ss = sessionStorage.getItem("token")
+    
 function Register(){
     const [state,setState] = useState({
         username:"",
@@ -54,12 +56,21 @@ function Register(){
               <li className="nav-item">
                 <a className="nav-link" href="/register">REGISTER</a>
               </li>
-              <li className="nav-item">
-                <a className="nav-link" href='/product'>PRODUCT</a>
-              </li>
-              <li className="nav-item">
-                <a className="nav-link disabled" href="https://www.google.com/">CONTACT</a>
-              </li>
+              {(ls||ss)&&
+                  <li className="nav-item">
+                  <a className="nav-link" href='/product'>PRODUCT</a>
+                  </li>                  
+              }
+              {(ls||ss)&&
+                  <li className="nav-item">
+                  <a className="nav-link " href="/order">ORDER</a>
+                  </li>                 
+              }
+              {(ls||ss)&&
+                  <li className="nav-item">
+                  <a className="nav-link " href="/logout">LOGOUT</a>
+                  </li>                
+              }               
             </ul>
           </div>
         </nav>
@@ -98,11 +109,6 @@ function Register(){
 
 
                     </div>
-
-                    {/* <div>
-                      <p className="mb-0">Login   <a href="/" className="text-white-50 fw-bold">Here</a></p>
-                      <p className="mb-0">Home Page   <a href="/" className="text-white-50 fw-bold">Here</a></p>
-                    </div> */}
 
                   </div>
                 </div>

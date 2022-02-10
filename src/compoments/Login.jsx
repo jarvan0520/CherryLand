@@ -1,33 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState  } from 'react';
 import axios from "axios";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import IconButton from "@material-ui/core/IconButton";
-// import { render } from '@testing-library/react';
-// import { TramOutlined } from '@material-ui/icons';
 import { useNavigate } from 'react-router-dom'
+const ls = localStorage.getItem("token")
+const ss = sessionStorage.getItem("token")
 
-
-export function Login() {
+ function Login({authenticate}) {
+  const navigate = useNavigate()
   const [state, setState] = useState({
     username: "",
     password: "",
     showPassword: false,
     rememberMe : false,
-    loggedIn : false
+    token : false
   })
-
 
   const handleChange = e => {
     const input = e.target;
     const value = input.type === 'checkbox' ? input.checked : input.value;
-    
     setState({
       ...state,
       [input.name]:value});
-   
   }
- 
   const handleClickShowPassword = () => {
     setState({
       ...state,
@@ -35,52 +31,38 @@ export function Login() {
     })
   };
   
-
-  const history = useNavigate()
-  const handleLogin =()=>  {
-    const {username,rememberMe} = state
+  const {username,rememberMe} = state
+  const handleLogin = ()=>  {
     
-    console.log()
     axios.post('http://206.189.39.185:5031/api/User/UserLogin', state)
+   
       .then(response => {
-        const token = response.data.data.token;
+       
+        const token = JSON.stringify(response.data.data.token);
         
-        console.log(token)
-        if(token){
-          if(rememberMe){
-            localStorage.setItem('rememberMe', rememberMe);
+          if(rememberMe){          
             localStorage.setItem('username', username ? username : "");
             localStorage.setItem('token', token);
-            
-            // alert('Login successfully');
-            history("/product");
+            var logintime = (new Date()).getTime();
+            localStorage.setItem('logintime', logintime);
+            console.log(localStorage.token)
+            authenticate()
+            navigate("/product")  
           }
-          else{
-            // sessionStorage.setItem('rememberMe', rememberMe);
+          else {
             sessionStorage.setItem('username', username ? username : "");
             sessionStorage.setItem('token', token);
-            setState({loggedIn:true})
-            // alert('Login successfully');
-            history("/product");
+            authenticate()
+            navigate("/product")
           }
-        }
-        
-          return response
-        
-        
       })
       .catch((error) => {
-        console.log(error)
         alert('Login Unsuccessfully');
         return error;
       })
-
   };
-  
-
  
-  return (
-    
+  return (   
     <section className="vh-100 gradient-custom">
       <nav className="navbar navbar-expand-lg navbar-light bg-light">
         <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -91,18 +73,32 @@ export function Login() {
             <li className="nav-item active">
               <a className="nav-link" href="/">HOME </a>
             </li>
-            <li className="nav-item">
-              <a className="nav-link" href="/login">LOGIN</a>
-            </li>
-            <li className="nav-item">
-              <a className="nav-link" href="/register">REGISTER</a>
-            </li>
-            <li className="nav-item">
-              <a className="nav-link" href='/product'>PRODUCT</a>
-            </li>
-            <li className="nav-item">
-              <a className="nav-link disabled" href="https://www.google.com/">CONTACT</a>
-            </li>
+            
+            {!(ls||ss)&&
+                 <li className="nav-item">
+                 <a className="nav-link" href="/login">LOGIN</a>
+               </li>       
+              }
+            {!(ls||ss)&&
+                  <li className="nav-item">
+                  <a className="nav-link" href="/register">REGISTER</a>
+                </li>          
+              }
+            {(ls||ss)&&
+                  <li className="nav-item">
+                  <a className="nav-link" href='/product'>PRODUCT</a>
+                  </li>                  
+              }
+              {(ls||ss)&&
+                  <li className="nav-item">
+                  <a className="nav-link " href="/order">ORDER</a>
+                  </li>                 
+              }
+              {(ls||ss)&&
+                  <li className="nav-item">
+                  <a className="nav-link " href="/logout">LOGOUT</a>
+                  </li>                
+              } 
           </ul>
         </div>
       </nav>
